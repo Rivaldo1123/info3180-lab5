@@ -28,6 +28,11 @@ def about():
     """Render the website's about page."""
     return render_template('about.html')
 
+@app.route('/secure-page')
+@login_required
+def secure_page():
+    return render_template('secure_page.html')
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -51,11 +56,14 @@ def login():
             # passed to the login_user() method below.
             if user is not None and check_password_hash(user.password,password):
             # get user id, load into session
+                remember_me = False
+                if 'remember_me' in request.form:
+                    remember_me = True
+
                 login_user(user)
-                session['is_authenticated'] = True
             # remember to flash a message to the user
             flash('Logged in successfully.','success')
-            return redirect(url_for("home"))  # they should be redirected to a secure-page route instead
+            return redirect(url_for("secure_page"))  # they should be redirected to a secure-page route instead
     return render_template("login.html", form=form)
 
 
